@@ -5,6 +5,7 @@ import pandas as pd
 
 class ExtractFeatures:
     def __init__(self, host_ip):
+        self.destination_port = 0
         self.host_ip = host_ip
         self.bwd_timestamps = []
         self.fwd_lengths = []
@@ -16,6 +17,7 @@ class ExtractFeatures:
         self.urg_flag_count = 0
 
     def addPacket(self, packet):
+        self.destination_port = packet.destination_port
         self.bwd_timestamps.append(packet.timestamp)
 
         if self.host_ip == packet.dst_ip:
@@ -41,7 +43,7 @@ class ExtractFeatures:
         return np.mean(self.fwd_lengths)
 
     def _get_fwd_packet_length_std(self):
-        if len(self.fwd_lengths) < 2:
+        if len(self.fwd_lengths) <= 2:
             return 0
         return statistics.stdev(self.fwd_lengths)
 
@@ -61,7 +63,7 @@ class ExtractFeatures:
         return np.mean(self.bwd_lengths)
 
     def _get_bwd_packet_length_std(self):
-        if len(self.bwd_lengths) < 2:
+        if len(self.bwd_lengths) <= 2:
             return 0
         return statistics.stdev(self.bwd_lengths)
 
@@ -76,7 +78,7 @@ class ExtractFeatures:
         return np.mean(np.diff(self.bwd_timestamps))
 
     def _get_bwd_iat_std(self):
-        if len(self.bwd_timestamps) < 2:
+        if len(self.bwd_timestamps) <= 2:
             return 0
         return statistics.stdev(np.diff(self.bwd_timestamps))
 
@@ -106,7 +108,7 @@ class ExtractFeatures:
 
     def _get_packet_length_std(self):
         new_list = self.fwd_lengths + self.bwd_lengths
-        if len(new_list) < 2:
+        if len(new_list) <= 2:
             return 0
         return statistics.stdev(new_list)
 
@@ -147,32 +149,33 @@ class ExtractFeatures:
         return min(new_list)
 
     def toSeries(self):
-        return [
-            [self._get_min_packet_length(),
-             self._get_max_packet_length(),
-             self._get_packet_length_mean(),
-             self._get_packet_length_std(),
-             self._get_packet_length_variance(),
-             self._get_syn_flag_count(),
-             self._get_psh_flag_count(),
-             self._get_urg_flag_count(),
-             self._get_down_up_ratio(),
-             self._get_total_length_of_fwd_packets(),
-             self._get_fwd_packet_length_max(),
-             self._get_fwd_packet_length_mean(),
-             self._get_fwd_packet_length_std(),
-             self._get_avg_fwd_segment_size(),
-             self._get_min_seg_size_forward(),
-             self._get_bwd_packet_length_max(),
-             self._get_bwd_packet_length_min(),
-             self._get_bwd_packet_length_mean(),
-             self._get_bwd_packet_length_std(),
-             self._get_bwd_iat_total(),
-             self._get_bwd_iat_mean(),
-             self._get_bwd_iat_std(),
-             self._get_bwd_iat_max(),
-             self._get_avg_bwd_segment_size()]
-        ]
+        return pd.DataFrame({
+            'destination port': self.destination_port,
+            'total length of fwd packets': self._get_total_length_of_fwd_packets(),
+            'fwd packet length max': self._get_fwd_packet_length_max(),
+            'fwd packet length mean': self._get_fwd_packet_length_mean(),
+            'fwd packet length std': self._get_fwd_packet_length_std(),
+            'bwd packet length max': self._get_bwd_packet_length_max(),
+            'bwd packet length min': self._get_bwd_packet_length_min(),
+            'bwd packet length mean': self._get_bwd_packet_length_mean(),
+            'bwd packet length std': self._get_bwd_packet_length_std(),
+            'bwd iat total': self._get_bwd_iat_total(),
+            'bwd iat mean': self._get_bwd_iat_mean(),
+            'bwd iat std': self._get_bwd_iat_std(),
+            'bwd iat max': self._get_bwd_iat_max(),
+            'min packet length': self._get_min_packet_length(),
+            'max packet length': self._get_max_packet_length(),
+            'packet length mean': self._get_packet_length_mean(),
+            'packet length std': self._get_packet_length_std(),
+            'packet length variance': self._get_packet_length_variance(),
+            'syn flag count': self._get_syn_flag_count(),
+            'psh flag count': self._get_psh_flag_count(),
+            'urg flag count': self._get_urg_flag_count(),
+            'down/up ratio': self._get_down_up_ratio(),
+            'avg fwd segment size': self._get_avg_fwd_segment_size(),
+            'avg bwd segment size': self._get_avg_bwd_segment_size(),
+            'min_seg_size_forward': self._get_min_seg_size_forward()
+        }, index=[0])
 
 
 class Packet:

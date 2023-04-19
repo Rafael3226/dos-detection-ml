@@ -11,7 +11,7 @@ models = {
 interface = 'Wi-Fi'
 host_ip = '10.24.22.152'
 broadcast = '224.77.77.77'
-ip_list = {host_ip: ExtractFeatures.ExtractFeatures(host_ip)}
+ip_list = {}
 
 # Load the decision tree model using pickle
 with open(models[2], 'rb') as f:
@@ -25,23 +25,23 @@ def extract_features(packet):
     global host_ip
     parsed_packet = ExtractFeatures.Packet(packet)
     dst_ip = packet.ip.dst
+    src_ip = packet.ip.src
+    ip_lable = src_ip if host_ip == dst_ip else dst_ip
     try:
         if dst_ip in ip_list:
-            return ip_list[dst_ip].addPacket(parsed_packet)
+            return ip_list[ip_lable].addPacket(parsed_packet)
         else:
-            ip_list = {
-                **ip_list, dst_ip: ExtractFeatures.ExtractFeatures(dst_ip)
-            }
-            return ip_list[dst_ip].addPacket(parsed_packet)
+            ip_list[ip_lable] = ExtractFeatures.ExtractFeatures(host_ip)
+            return ip_list[ip_lable].addPacket(parsed_packet)
     except Exception as e:
         print(e)
         return []
 
 
 # Define a callback function to process each captured packet
-def packet_callback(pkt):
+def packet_callback(packet):
     # extract features from the packet
-    features = extract_features(pkt)
+    features = extract_features(packet)
     # classify the packet using the loaded model
     if len(features):
         result = model.predict(features)[0]
