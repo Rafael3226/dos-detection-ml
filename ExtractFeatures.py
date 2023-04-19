@@ -136,7 +136,7 @@ class ExtractFeatures:
         return np.mean(self.fwd_segment_lengths)
 
     def _get_avg_bwd_segment_size(self):
-        if len(self.bwd_segment_lengths) == 2:
+        if len(self.bwd_segment_lengths) == 0:
             return 0
         return np.mean(self.bwd_segment_lengths)
 
@@ -148,30 +148,30 @@ class ExtractFeatures:
 
     def toSeries(self):
         return [
-            {'min packet length': self._get_min_packet_length()},
-            {'max packet length': self._get_max_packet_length()},
-            {'packet length mean': self._get_packet_length_mean()},
-            {'packet length std': self._get_packet_length_std()},
-            {'packet length variance': self._get_packet_length_variance()},
-            {'syn flag count': self._get_syn_flag_count()},
-            {'psh flag count': self._get_psh_flag_count()},
-            {'urg flag count': self._get_urg_flag_count()},
-            {'down up ratio': self._get_down_up_ratio()},
-            {'total length of fwd packets': self._get_total_length_of_fwd_packets()},
-            {'fwd packet length max': self._get_fwd_packet_length_max()},
-            {'fwd packet length mean': self._get_fwd_packet_length_mean()},
-            {'fwd packet length std': self._get_fwd_packet_length_std()},
-            {'avg fwd segment size': self._get_avg_fwd_segment_size()},
-            {'min seg size forward': self._get_min_seg_size_forward()},
-            {'bwd packet length max': self._get_bwd_packet_length_max()},
-            {'bwd packet length min': self._get_bwd_packet_length_min()},
-            {'bwd packet length mean': self._get_bwd_packet_length_mean()},
-            {'bwd packet length std': self._get_bwd_packet_length_std()},
-            {'bwd iat total': self._get_bwd_iat_total()},
-            {'bwd iat mean': self._get_bwd_iat_mean()},
-            {'bwd iat std': self._get_bwd_iat_std()},
-            {'bwd iat max': self._get_bwd_iat_max()},
-            {'avg bwd segment_size': self._get_avg_bwd_segment_size()}
+            [self._get_min_packet_length(),
+             self._get_max_packet_length(),
+             self._get_packet_length_mean(),
+             self._get_packet_length_std(),
+             self._get_packet_length_variance(),
+             self._get_syn_flag_count(),
+             self._get_psh_flag_count(),
+             self._get_urg_flag_count(),
+             self._get_down_up_ratio(),
+             self._get_total_length_of_fwd_packets(),
+             self._get_fwd_packet_length_max(),
+             self._get_fwd_packet_length_mean(),
+             self._get_fwd_packet_length_std(),
+             self._get_avg_fwd_segment_size(),
+             self._get_min_seg_size_forward(),
+             self._get_bwd_packet_length_max(),
+             self._get_bwd_packet_length_min(),
+             self._get_bwd_packet_length_mean(),
+             self._get_bwd_packet_length_std(),
+             self._get_bwd_iat_total(),
+             self._get_bwd_iat_mean(),
+             self._get_bwd_iat_std(),
+             self._get_bwd_iat_max(),
+             self._get_avg_bwd_segment_size()]
         ]
 
 

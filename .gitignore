@@ -1,5 +1,4 @@
-__pycache__/*
-models/*
-traffic/*
-MachineLearningCVE/*
-CapturedTraffic/*
+__pycache__/
+models/
+traffic/
+CapturedTraffic/

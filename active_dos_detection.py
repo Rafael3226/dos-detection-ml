@@ -9,7 +9,7 @@ models = {
     4: './models/neural_network_model.pkl',
 }
 interface = 'Wi-Fi'
-host_ip = '192.168.0.29'
+host_ip = '10.24.22.152'
 broadcast = '224.77.77.77'
 ip_list = {host_ip: ExtractFeatures.ExtractFeatures(host_ip)}
 
